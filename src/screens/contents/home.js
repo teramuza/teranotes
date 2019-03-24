@@ -113,6 +113,9 @@ class Home extends Component{
                         </View>
                     </View>
                 </Content>
+                <Fab style={{backgroundColor: '#b29008'}} position="bottomRight" onPress={() => this.props.navigation.navigate('addNote')}>
+                <Icon name='add'/>
+                </Fab>
             </Container>
         )
     }

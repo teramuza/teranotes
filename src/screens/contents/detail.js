@@ -54,16 +54,22 @@ class Detail extends Component{
 
         		<Content style={{backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 10}}>
         		<View style={{flexDirection: 'row', flex: 1, paddingLeft: 10}}>
-        			<Text style={{fontSize: 28, color: '#876c00', flex: 1}}>09.03</Text>
+        			<View style={{flex: 1, paddingRight: 10, flex: 1, flexDirection: 'row'}}>
+                        <Text style={{fontSize: 30, textAlign:'right', color: '#ad940d'}}>14</Text>
+                        <Text style={{fontSize: 20, textAlign:'right', color: '#bca940', paddingTop: 4}}>.51</Text>
+                    </View>
         			
-        			<View style={{paddingTop: 5, paddingLeft: 20, flex: 4, flexDirection: 'row-reverse'}}>
-	        			<Text style={{fontSize: 18, color: '#876c00', paddingLeft: 7}}>Kl, Malaysia</Text>
-	        			<Icon name='pin' style={{fontSize: 15, color: '#876c00', paddingLeft: 7, paddingTop: 5}}/>
+        			<View style={{paddingTop: 5, flex: 4, flexDirection: 'row-reverse', paddingTop: 10}}>
+	        			<Text style={{fontSize: 16, color: '#876c00', paddingLeft: 7}}>Tangerang Selatan, Banten</Text>
+	        			<Icon name='pin' style={{fontSize: 13, color: '#876c00', paddingLeft: 7, paddingTop: 3}}/>
         			</View>
         		</View>
+        		<View style={{paddingTop: 30, maxHeight: 200}}>
+        			<Image source={{uri : 'https://cdn.idntimes.com/content-images/community/2018/11/img-20181114-115312-72da199896b98b5745e097ed1d92da99_600x400.png'}} style={{width: '100%', height: '100%'}}/>
+        		</View>
+        		<View style={{paddingTop: 10, paddingLeft: 10}}>
+        			<Text style={{color: '#565656'}}>Ini ceritanya halaman detail dari diary harian. apa yg kira2 kurang dari halaman ini.. {'\n'}Masukan kalian sangat membantu.. kurang referensi soalnya :) </Text>
 
-        		<View style={{paddingTop: 30, paddingLeft: 10}}>
-        			<Text style={{color: '#565656'}}>Lorem Ipsum</Text>
         		</View>
         		</Content>
         		<Fab

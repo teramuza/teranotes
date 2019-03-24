@@ -16,6 +16,7 @@ import Pinlog from './src/screens/auth/pinlog'
 //;contents
 import Home from './src/screens/contents/home'
 import Detail from './src/screens/contents/detail'
+import AddNote from './src/screens/contents/addNote'
 //;
 
 const AppAuth = createStackNavigator({
@@ -38,6 +39,9 @@ const AppContents = createStackNavigator({
     },
     detail : {
         screen : Detail
+    },
+    addNote : {
+        screen : AddNote
     }
 })
 
