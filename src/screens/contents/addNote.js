@@ -6,6 +6,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import ImagePicker from 'react-native-image-picker'
 
 import HeadForm from '../../components/headForm'
+import {postNotes, getNotes} from '../../redux/actions/notes'
 
 class AddNote extends Component{
 	static navigationOptions = ({ navigation }) => ({
@@ -21,6 +22,7 @@ class AddNote extends Component{
             dateObj : {},
             text : '',
             photo : null,
+            location : ''
       	}
     }
 
@@ -64,38 +66,60 @@ class AddNote extends Component{
     _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false })
 
     _handleDateTimePicked = (date) => {
-      this.insertDateVal(date)
-      this._hideDateTimePicker()
+        this.insertDateVal(date)
+        this._hideDateTimePicker()
     }
 
     handleChoosePhoto = () => {
         const options = {
-          noData: true,
+            noData: true,
         }
         ImagePicker.launchImageLibrary(options, response => {
-          if (response.uri) {
-            this.setState({ photo: response })
-          }
+            if (response.uri) {
+                this.setState({ photo: response })
+            }
         })
+    }
+
+    async handleSubmit() {
+        const token = this.props.auth.data.token
+        const uid = this.props.auth.data.id
+        const contents = this.state.text
+        const location = this.state.location
+        const datetime = this.state.dateObj.fullDate
+        const body = {contents, location, datetime}
+        await this.props.dispatch(postNotes(token, uid, body))
+        await this.props.dispatch(getNotes(token, uid))
+        this.props.navigation.goBack()
     }
 
     render() {
     	return (
     		<Container>
                 <StatusBar hidden={false} barStyle="default" style={{backgroundColor: '#fff'}}/>
-                <HeadForm onCancel={()=> this.props.navigation.goBack()} titleHead={this.state.date} onPressHead={()=> this._showDateTimePicker()} onConfirm={()=> console.warn(this.state.text)}/>
+                <HeadForm 
+                onCancel={()=> this.props.navigation.goBack()} 
+                titleHead={this.state.date} 
+                onPressHead={()=> this._showDateTimePicker()} 
+                onConfirm={()=> this.handleSubmit()}
+                />
 
         		<Content style={{backgroundColor: '#fff', paddingHorizontal: 15, paddingVertical: 10}}>
         		<View style={{flexDirection: 'row', flex: 1, paddingLeft: 10}}>
         			<View style={{flex: 1, paddingRight: 10, flex: 1, flexDirection: 'row'}}>
-                        <Text style={{fontSize: 30, textAlign:'right', color: '#ad940d'}} onPress={()=> this._showDateTimePicker()}>{this.state.dateObj.hour}</Text>
-                        <Text style={{fontSize: 20, textAlign:'right', color: '#bca940', paddingTop: 4}} onPress={()=> this._showDateTimePicker()}>.{this.state.dateObj.min}</Text>
+                        <Text 
+                        style={{fontSize: 30, textAlign:'right', color: '#ad940d'}} 
+                        onPress={()=> this._showDateTimePicker()}>{this.state.dateObj.hour}</Text>
+                        <Text 
+                        style={{fontSize: 20, textAlign:'right', color: '#bca940', paddingTop: 4}} 
+                        onPress={()=> this._showDateTimePicker()}>.{this.state.dateObj.min}</Text>
                     </View>
         			
         			<View style={{flex: 4, flexDirection: 'row-reverse', paddingTop: 5}}>
 	        			<Input 
                           placeholder="type in any location..." 
                           placeholderTextColor="#876c00" 
+                          onChangeText={(location) => this.setState({location})}
                           style={{ paddingLeft: 10, color: '#876c00', fontSize: 16, maxHeight: 30, maxWidth: '55%', padding: 1}}
                         />
 	        			<Icon name='pin' style={{fontSize: 13, color: '#876c00', paddingLeft: 7, paddingTop: 8}}/>
@@ -147,4 +171,9 @@ class AddNote extends Component{
         }
     }
 }
-export default connect()(AddNote)
+const mapStateToProps = (state) => {
+    return {
+        auth: state.auth
+    }
+}
+export default connect(mapStateToProps)(AddNote)

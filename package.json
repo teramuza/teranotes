@@ -7,12 +7,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.2.1",
+    "axios": "^0.18.0",
     "jest-haste-map": "^24.5.0",
     "native-base": "^2.12.1",
     "react": "16.8.3",
     "react-art": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-native": "0.59.1",
+    "react-native": "^0.59.1",
     "react-native-gesture-handler": "^1.1.0",
     "react-native-htmlview": "^0.13.0",
     "react-native-image-picker": "^0.28.0",

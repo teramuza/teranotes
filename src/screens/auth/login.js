@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Alert, AsyncStorage, StatusBar, Image, BackHandler } from 'react-native';
+import { Alert, StatusBar, Image, BackHandler } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { Container, Header, Content, Form, Item, Input, Label, Thumbnail, View, Left, Right, Button, Icon, Text } from 'native-base';
 import { connect } from 'react-redux';
 
 import HeadIcon from '../../components/headIcon'
-// import { login } from '../../publics/redux/actions/auth'
+import { login } from '../../redux/actions/auth'
+import { getNotes } from '../../redux/actions/notes'
 
 class Login extends Component {
 
@@ -26,8 +28,8 @@ class Login extends Component {
 	render() {
 		return (
 			<Container>
-			<StatusBar backgroundColor="#eee" hidden={false}/>
-				<Content style={{backgroundColor: '#eee'}}>
+			<StatusBar backgroundColor="transparent" hidden={false} barstyle="dark-content"/>
+				<Content style={{backgroundColor: '#fff'}}>
 					<HeadIcon/>
 					<Form>
 						<Item stackedLabel>
@@ -67,7 +69,7 @@ class Login extends Component {
 						</View>
 						<View style={{marginTop: 30 ,paddingTop : 40, paddingHorizontal: 20, height: 50}}>
 							<View style={{borderBottomWidth: 1, borderBottomColor: '#707070'}}/>
-							<Text style={{position: 'absolute', zIndex: 1, top: 28, left: '43%', backgroundColor: '#eee', color: '#969696', paddingHorizontal: 8, fontSize: 15 }}>Login with</Text>
+							<Text style={{position: 'absolute', zIndex: 1, top: 28, left: '43%', backgroundColor: '#fff', color: '#969696', paddingHorizontal: 8, fontSize: 15 }}>Login with</Text>
 						</View>
 						<View style={{flexDirection: 'row', paddingTop: 30, paddingHorizontal: 30, flex: 1}} >
 							<View style={{flex : 3, paddingHorizontal: 30}}>
@@ -91,13 +93,13 @@ class Login extends Component {
 		if(this.state.emailInput === '' || this.state.passwordInput === ''){
 			return(	
 				<Button disabled style={{borderRadius: 25, backgroundColor: '#e5d47b'}} block>
-					<Text style={{color: '#444'}}>Masuk</Text>
+					<Text style={{color: '#444'}}>Login</Text>
 				</Button>
 			)
 		}else{
 			return(
 				<Button style={{borderRadius: 25, backgroundColor: '#efca09'}} block onPress={() => this.handleLogin()}>
-					<Text style={{color: '#282828'}}>Masuk</Text>
+					<Text style={{color: '#282828'}}>Login</Text>
 				</Button>
 			)
 		}
@@ -105,29 +107,37 @@ class Login extends Component {
 
 
 	async handleLogin(){
-		// await this.props.dispatch(login({
-		// 	email : this.state.emailInput,
-		// 	password : this.state.passwordInput
-		// }));
-		// const loginInfo = this.props.auth.data
-		// if(loginInfo.token){
-		// 	await AsyncStorage.setItem('token', loginInfo.token)
-		// 	await AsyncStorage.setItem('userId', String(loginInfo.id))
-		// 	await AsyncStorage.setItem('email', loginInfo.email)
-		// 	await AsyncStorage.setItem('refToken', loginInfo.refToken)
+		await this.props.dispatch(login({
+			email : this.state.emailInput,
+			password : this.state.passwordInput
+		}));
+		const loginInfo = this.props.auth.data
+		if(loginInfo.token){
 
+			const user = loginInfo.user
+			try{
+			await AsyncStorage.setItem('token', String(loginInfo.token))
+			await AsyncStorage.setItem('userId', String(user.id))
+			await AsyncStorage.setItem('userFirstName', user.first_name)
+			await AsyncStorage.setItem('userLastName', String(user.last_lame))
+			await AsyncStorage.setItem('userAvatar', String(user.image_url))
+			await AsyncStorage.setItem('userEmail', String(user.email))
+			await AsyncStorage.setItem('refToken', String(loginInfo.refToken))
 
-		// 	await this.props.dispatch(getSongs(loginInfo.token))
-		// 	await this.props.dispatch(getLists())
-		// 	this.props.navigation.navigate(this.state.nextScreen)
-		// }
-		// else if(loginInfo.message){
-		// 	Alert.alert("Ups", loginInfo.message)
-		// }
-		// else{
-		// 	Alert.alert("Error", "Terjadi suatu kesalahan, harap coba lagi nanti.")
-		// }
-		this.props.navigation.navigate('home')
+			await this.props.dispatch(getNotes(loginInfo.token, user.id))
+
+			this.props.navigation.navigate('contents')
+			}catch(e){
+				console.warn(e);
+			}
+
+		}
+		else if(loginInfo.message){
+			Alert.alert("Ups", loginInfo.message)
+		}
+		else{
+			Alert.alert("Error", "An error occurred, please try again later.")
+		}
 	}
 	
 }
@@ -135,8 +145,8 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		// auth: state.auth
+		auth: state.auth
 	}
 }
 
-export default connect()(Login)
+export default connect(mapStateToProps)(Login)

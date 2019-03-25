@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Alert, AsyncStorage, StatusBar, Image,BackHandler } from 'react-native';
+import { Alert, StatusBar, Image,BackHandler } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { Container, Header, Content, Form, Item, Input, Label, Thumbnail,View, Left, Right, Button,Icon, Text } from 'native-base';
 import { connect } from 'react-redux';
 
 import HeadIcon from '../../components/headIcon'
-// import { register } from '../../publics/redux/actions/auth'
+import { register } from '../../redux/actions/auth'
 
 class Register extends Component {
 
@@ -16,9 +17,8 @@ class Register extends Component {
 		super(props);
 		
 		this.state = {
-			username : '',
 			email : '',
-			name : '',
+			first_name : '',
 			phone : '',
 			password : '',
 			passwordConf : '',
@@ -34,22 +34,23 @@ class Register extends Component {
 					<HeadIcon/>
 					<Form>
 						<Item stackedLabel>
-							<Label style={{color: '#2b2b2b'}}>Full Name</Label>
+							<Label style={{color: '#2b2b2b'}}>First Name</Label>
 							<Input 
-							onChangeText={(name) => this.setState({name})} 
-							placeholder="enter your full name" 
-							style={{fontSize: 13, color: '#2b2b2b'}} 
+							onChangeText={(first_name) => this.setState({first_name})} 
+							placeholder="enter your first name" 
+							style={{fontSize: 13, color: '#2b2b2b'}}
 							placeholderTextColor="#969696" 
+							autoCapitalize = 'words' 
 							/>
 						</Item>
 						<Item stackedLabel>
-							<Label style={{color: '#2b2b2b'}}>Username</Label>
+							<Label style={{color: '#2b2b2b'}}>Last Name</Label>
 							<Input 
-							onChangeText={(username) => this.setState({username})} 
-							placeholder="enter your username" 
+							onChangeText={(last_name) => this.setState({last_name})} 
+							placeholder="enter your last name" 
 							style={{fontSize: 13, color: '#2b2b2b'}} 
 							placeholderTextColor="#969696" 
-							autoCapitalize = 'none'
+							autoCapitalize = 'words' 
 							/>
 						</Item>
 
@@ -78,7 +79,7 @@ class Register extends Component {
 						<Item stackedLabel>
 							<Label style={{color: '#2b2b2b'}}>Confirm Password</Label>
 							<Input 
-							onChangeText={(password) => this.setState({passwordConf})} 
+							onChangeText={(passwordConf) => this.setState({passwordConf})} 
 							secureTextEntry={true} 
 							style={{fontSize: 13, color: '#2b2b2b'}} 
 							placeholder="retype your password" 
@@ -139,30 +140,28 @@ class Register extends Component {
 		if(this.state.password === this.state.passwordConf){
 			try{
 				await this.props.dispatch(register({
-					username : this.state.username,
 					email : this.state.email,
 					password : this.state.password,
-					name : this.state.name,
-					avatar : this.state.avatar,
-					phone : this.state.phone
+					first_name : this.state.first_name,
+					last_name : this.state.last_name,
 				}));
 				const loginInfo = this.props.auth.data
 				if(loginInfo.token){
-
-					await AsyncStorage.setItem('userId', String(loginInfo.userId));
+					console.warn('if berjalan');
+					await AsyncStorage.setItem('user', String(loginInfo.user));
 					await AsyncStorage.setItem('token', loginInfo.token);
 					await AsyncStorage.setItem('refreshToken', loginInfo.refreshToken);
-					
+					console.warn('berhasil asynctorage');
 					this.props.navigation.navigate('Home')
 				}
-				else if(loginInfo.status === 'registered'){
+				else if(loginInfo.status === 'already'){
 					Alert.alert("Ups", loginInfo.message)
 				}
 				else if(loginInfo.status === 'error'){
 					Alert.alert("Ups", loginInfo.message)
 				}
 				else{
-					Alert.alert("Error", "Terjadi suatu kesalahan, harap coba lagi nanti.")
+					Alert.alert("Error", "An error occurred, please try again later.")
 				}
 			}catch(e){
 				console.warn(e.response);
@@ -178,7 +177,7 @@ class Register extends Component {
 
 const mapStateToProps = (state) => {
 	return {
-		// auth: state.auth
+		auth: state.auth
 	}
 }
 
